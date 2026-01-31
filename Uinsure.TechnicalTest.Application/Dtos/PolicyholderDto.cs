@@ -1,4 +1,4 @@
-﻿using Uinsure.TechnicalTest.Domain.ValueObjects;
+﻿using Uinsure.TechnicalTest.Domain.Entities;
 
 namespace Uinsure.TechnicalTest.Application.Dtos;
 
@@ -8,8 +8,8 @@ public class PolicyholderDto
     public required string LastName { get; set; } = string.Empty;
     public required DateTime DateOfBirth { get; set; }
 
-    internal PolicyHolder ToDomain()
+    internal Policyholder ToDomain(Guid policyId)
     {
-        return new PolicyHolder(FirstName, LastName, new DateTimeOffset(DateOfBirth));
+        return new Policyholder(FirstName, LastName, new DateTimeOffset(DateOfBirth), policyId);
     }
 }

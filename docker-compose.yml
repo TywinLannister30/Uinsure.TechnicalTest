@@ -1,0 +1,35 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: uinsure-sql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools:latest
+    container_name: uinsure-sql-init
+    depends_on:
+      - db
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}
+    volumes:
+      - ./docker/db:/db:ro
+    command:
+      - /bin/bash
+      - -c
+      - |
+        for i in {1..60}; do
+          /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" && break
+          echo "waiting for sql server..."
+          sleep 2
+        done
+        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -i /db/init.sql
+
+volumes:
+  mssql-data:

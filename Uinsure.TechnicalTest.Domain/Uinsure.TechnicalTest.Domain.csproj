@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Entities\Policyholder.cs~RF754ccf.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Uninsure.TechnicalTest.Common.SharedKernal\Uinsure.TechnicalTest.Common.SharedKernal.csproj" />
   </ItemGroup>
 

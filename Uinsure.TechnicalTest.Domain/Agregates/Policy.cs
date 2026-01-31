@@ -1,11 +1,10 @@
 ﻿using Uinsure.TechnicalTest.Domain.Entities;
 using Uinsure.TechnicalTest.Domain.Enums;
-using Uinsure.TechnicalTest.Domain.ValueObjects;
 using Uninsure.TechnicalTest.Common.SharedKernal;
 
 namespace Uinsure.TechnicalTest.Domain.Agregates;
 
-public class Policy : AggregateRoot<string>
+public class Policy : AggregateRoot<Guid>
 {
     public DateTimeOffset StartDate { get; private set; }
     public DateTimeOffset EndDate { get; private set; }
@@ -13,30 +12,40 @@ public class Policy : AggregateRoot<string>
     public decimal Amount { get; private set; }
     public bool HasClaims { get; private set; }
     public bool AutoRenew { get; private set; }
-    public List<PolicyHolder> PolicyHolders { get; private set; }
+    public List<Policyholder> Policyholders { get; private set; } = [];
     public Property? Property { get; private set; }
-    public List<Payment> PaymentReferences { get; private set; } = [];
+    public List<Payment> Payments { get; private set; } = [];
 
     public Policy() { }
 
     public Policy(
         DateTimeOffset startDate, 
-        DateTimeOffset endDate, 
         InsuranceType insuranceType,
         decimal amount, 
         bool hasClaims, 
-        bool autoRenew,
-        List<PolicyHolder> policyHolders,
-        Property property): base()
+        bool autoRenew): base()
     {
-        Id = Guid.NewGuid().ToString();
+        Id = Guid.NewGuid();
         StartDate = startDate;
-        EndDate = endDate;
+        EndDate = startDate.AddYears(1);
         InsuranceType = insuranceType;
         Amount = amount;
         HasClaims = hasClaims;
         AutoRenew = autoRenew;
-        PolicyHolders = policyHolders;
+    }
+
+    public void AddPolicyHolder(Policyholder policyholder)
+    {
+        Policyholders.Add(policyholder);
+    }
+
+    public void AddPayment(Payment payment)
+    {
+        Payments.Add(payment);
+    }
+
+    public void AddProperty(Property? property)
+    {
         Property = property;
     }
 }

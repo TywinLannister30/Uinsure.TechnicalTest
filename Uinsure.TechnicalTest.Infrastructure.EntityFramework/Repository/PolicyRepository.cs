@@ -4,7 +4,7 @@ using Uinsure.TechnicalTest.Infrastructure.EntityFramework.Context;
 
 namespace Uinsure.TechnicalTest.Infrastructure.EntityFramework.Repository;
 
-internal sealed class PolicyRepository(IPolicyDbContext dbContext) : IPolicyRepository
+public class PolicyRepository(IPolicyDbContext dbContext) : IPolicyRepository
 {
     public async Task SaveAsync(Policy policy, CancellationToken cancellationToken = default)
     {

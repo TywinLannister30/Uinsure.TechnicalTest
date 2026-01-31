@@ -1,21 +1,49 @@
+using Asp.Versioning;
+using Asp.Versioning.Routing;
+using Uinsure.TechnicalTest.API.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "Configuration"));
+builder.Configuration.AddJsonFile("ConnectionStrings.json");
+
+var connectionString = builder.Configuration.GetConnectionString("PolicyContext");
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDatabaseContext(connectionString);
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.ConstraintMap["apiVersion"] = typeof(ApiVersionRouteConstraint);
+});
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
