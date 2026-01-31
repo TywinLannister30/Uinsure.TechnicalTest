@@ -3,14 +3,14 @@ using Uninsure.TechnicalTest.Common.SharedKernal;
 
 namespace Uinsure.TechnicalTest.Domain.Entities;
 
-public class PaymentReference : Entity<string>
+public class Payment : Entity<string>
 {
     public PaymentType Type { get; private set; }
     public decimal Amount { get; private set; }
 
-    public PaymentReference() { }
+    public Payment() { }
 
-    public PaymentReference(string paymentReference, PaymentType type, decimal amount) : base()
+    public Payment(string paymentReference, PaymentType type, decimal amount) : base()
     {
         Id = paymentReference;
         Type = type;

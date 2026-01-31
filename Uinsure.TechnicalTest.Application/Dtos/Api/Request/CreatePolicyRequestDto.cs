@@ -27,25 +27,17 @@ public class CreatePolicyRequestDto : IValidatableObject
 
         if (policyholderCount > 0)
         {
-            var today = DateTimeOffset.UtcNow.Date;
             for (var i = 0; i < policyholderCount; i++)
             {
                 var dateOfBirth = Policyholders[i].DateOfBirth.Date;
-                var age = today.Year - dateOfBirth.Year;
-                if (dateOfBirth > today.AddYears(-age))
+                var age = StartDate.Year - dateOfBirth.Year;
+                
+                if (dateOfBirth > StartDate.AddYears(-age))
                     age--;
 
-                if (age < 16)
-                    yield return new ValidationResult(
-                        "All policyholders must be at least 16.",
-                        [$"{nameof(Policyholders)}[{i}].{nameof(PolicyholderDto.DateOfBirth)}"]);
+                if (age < 16) 
+                    yield return new ValidationResult("All policyholders must be at least 16.",[$"{nameof(Policyholders)}[{i}].{nameof(PolicyholderDto.DateOfBirth)}"]);
             }
         }
-
-        if (Property == null)
-            yield return new ValidationResult("There must be a Property.", [nameof(Property)]);
-
-        if (Payment == null)
-            yield return new ValidationResult("There must be a Property.", [nameof(Payment)]);
     }
 }

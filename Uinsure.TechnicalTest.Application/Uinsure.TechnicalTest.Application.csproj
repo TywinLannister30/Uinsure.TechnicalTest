@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Uinsure.TechnicalTest.Domain\Uinsure.TechnicalTest.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

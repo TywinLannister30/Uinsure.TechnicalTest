@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Uninsure.TechnicalTest.Common.SharedKernal\Uinsure.TechnicalTest.Common.SharedKernal.csproj" />
+  </ItemGroup>
+
 </Project>
