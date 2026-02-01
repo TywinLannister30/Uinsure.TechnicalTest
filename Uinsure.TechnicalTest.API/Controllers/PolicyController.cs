@@ -5,6 +5,7 @@ using Uinsure.TechnicalTest.Application.Dtos;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Response;
 using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
+using Uinsure.TechnicalTest.Application.Services.PolicyClaimService;
 using Uinsure.TechnicalTest.Application.Services.PolicyCreationService;
 using Uinsure.TechnicalTest.Application.Services.PolicyRenewalService;
 using Uinsure.TechnicalTest.Application.Services.PolicyRetrievalService;
@@ -17,11 +18,13 @@ namespace Uinsure.TechnicalTest.API.Controllers;
 public class PolicyController(
     IPolicyCreationService policyCreationService, 
     IPolicyCancellationService policyCancellationService,
+    IPolicyClaimService policyClaimService,
     IPolicyRenewalService policyRenewalService,
     IPolicyRetrievalService policyRetrievalService) : Controller
 {
     IPolicyCancellationService _policyCancellationService = policyCancellationService;
     IPolicyCreationService _policyCreationService = policyCreationService;
+    IPolicyClaimService _policyClaimService = policyClaimService;
     IPolicyRenewalService _policyRenewalService = policyRenewalService;
     IPolicyRetrievalService _policyRetrievalService = policyRetrievalService;
 
@@ -103,6 +106,21 @@ public class PolicyController(
 
         if (result.PolicyEnded)
             return UnprocessableEntity($"Policy with id {policyId} has ended and cannot be renewed.");
+
+        return Ok(result);
+    }
+
+    // To allow Could 2. - Not issue a refund if the policy has had a claim made against it.
+    [HttpPut("{policyId:guid}/mark-as-claim")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PolicyDto))]
+    [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(IActionResult))]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity, Type = typeof(IActionResult))]
+    public async Task<IActionResult> MarkAsClaim(Guid policyId)
+    {
+        var result = await _policyClaimService.MarkAsClaim(policyId);
+
+        if (result is null)
+            return NotFound($"Policy with id {policyId} does not exist.");
 
         return Ok(result);
     }

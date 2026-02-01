@@ -21,6 +21,26 @@ public class PolicyCancellationService(IPolicyRepository policyRepository, IRefu
         if (policy.IsCancelled())
             return new CancelPolicyResponseDto { AlreadyCancelled = true };
 
+        if (policy.HasAnyClaims())
+        {
+            if (actionRefund)
+            {
+                policy.Cancel(request.CancellationDate);
+                await _policyRepository.SaveChangesAsync();
+
+                return new CancelPolicyResponseDto
+                {
+                    Policy = policy.ToDto(),
+                    RefundAmount = 0,
+                };
+            }
+
+            return new CancelPolicyResponseDto
+            {
+                RefundAmount = 0,
+            };
+        }
+
         var refundProcessor = _refundProcessorFactory.GetRefundProcessor(policy.StartDate, request.CancellationDate);
 
         if (refundProcessor is null)

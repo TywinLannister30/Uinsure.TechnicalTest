@@ -9,4 +9,7 @@ public class CancelPolicyResponseDto
     
     [JsonIgnore]
     public bool AlreadyCancelled { get; set; }
+    
+    [JsonIgnore]
+    public bool HasClaims { get; set; }
 }

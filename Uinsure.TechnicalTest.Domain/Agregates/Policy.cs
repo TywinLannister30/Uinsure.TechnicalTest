@@ -76,4 +76,14 @@ public class Policy : AggregateRoot<Guid>
     {
         EndDate = EndDate.AddYears(1);
     }
+
+    public void MarkAsClaim()
+    {
+        HasClaims = true;
+    }
+
+    public bool HasAnyClaims()
+    {
+        return HasClaims;
+    }
 }

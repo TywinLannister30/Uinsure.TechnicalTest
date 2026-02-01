@@ -60,6 +60,42 @@ public class CancelPolicyTests(HttpClientFixture httpClientFixture)
         Assert.Equal(dto.Payment.Amount, cancelResponse.Data.RefundAmount);
     }
 
+    [Fact]
+    public async Task When_PolicyHasClaims_Expect_OkWithNoRefundAndCancellation()
+    {
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
+
+        var postRequest = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var postResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(postRequest);
+
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        Assert.NotNull(postResponse.Data);
+
+        await Task.Delay(500);
+
+        var markAsClaimRequest = new RestRequest($"api/v1/policy/{postResponse.Data.UniqueReference}/mark-as-claim", Method.Put);
+        var markAsClaimResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(markAsClaimRequest);
+
+        Assert.Equal(HttpStatusCode.OK, markAsClaimResponse.StatusCode);
+        Assert.NotNull(markAsClaimResponse.Data);
+        Assert.True(markAsClaimResponse.Data.HasClaims);
+
+        await Task.Delay(500);
+
+        var cancellationDto = new CancelPolicyRequestDto { CancellationDate = postResponse.Data.StartDate.AddDays(1) };
+        var cancelRequest = new RestRequest($"api/v1/policy/{postResponse.Data.UniqueReference}/cancel", Method.Put).AddJsonBody(cancellationDto);
+        var cancelResponse = await _httpClientFixture.Client.ExecuteAsync<CancelPolicyResponseDto>(cancelRequest);
+
+        Assert.Equal(HttpStatusCode.OK, cancelResponse.StatusCode);
+        Assert.NotNull(cancelResponse.Data);
+        Assert.NotNull(cancelResponse.Data.Policy);
+
+        Assert.True(cancelResponse.Data.Policy.HasClaims);
+        Assert.Equal(0, cancelResponse.Data.RefundAmount);
+        Assert.Single(cancelResponse.Data.Policy.Payments);
+        Assert.Single(cancelResponse.Data.Policy.Payments, x => x.TransactionType == TransactionType.Payment.ToString());
+    }
+
     [Theory]
     [InlineData(1)]
     [InlineData(7)]
@@ -177,5 +213,41 @@ public class CancelPolicyTests(HttpClientFixture httpClientFixture)
         var secondCancelResponse = await _httpClientFixture.Client.ExecuteAsync<CancelPolicyResponseDto>(secondCancelRequest);
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, secondCancelResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task When_PolicyCancelledBeforeItStartsButPolicyHasAClaim_Expect_OkWithNoRefundAndDetails()
+    {
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
+
+        var postRequest = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var postResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(postRequest);
+
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        Assert.NotNull(postResponse.Data);
+
+        await Task.Delay(500);
+
+        var markAsClaimRequest = new RestRequest($"api/v1/policy/{postResponse.Data.UniqueReference}/mark-as-claim", Method.Put);
+        var markAsClaimResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(markAsClaimRequest);
+
+        Assert.Equal(HttpStatusCode.OK, markAsClaimResponse.StatusCode);
+        Assert.NotNull(markAsClaimResponse.Data);
+
+        await Task.Delay(500);
+
+        var cancellationDto = new CancelPolicyRequestDto { CancellationDate = postResponse.Data.StartDate.AddDays(-1) };
+        var cancelRequest = new RestRequest($"api/v1/policy/{postResponse.Data.UniqueReference}/cancel", Method.Put).AddJsonBody(cancellationDto);
+        var cancelResponse = await _httpClientFixture.Client.ExecuteAsync<CancelPolicyResponseDto>(cancelRequest);
+
+        Assert.Equal(HttpStatusCode.OK, cancelResponse.StatusCode);
+        Assert.NotNull(cancelResponse.Data);
+
+        Assert.Equal(199.99m, cancelResponse.Data.Policy.Amount);
+        Assert.True(cancelResponse.Data.Policy.HasClaims);
+
+        var payments = cancelResponse.Data.Policy.Payments;
+        Assert.Single(payments);
+        Assert.Equal(0, cancelResponse.Data.RefundAmount);
     }
 }
