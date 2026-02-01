@@ -1,6 +1,6 @@
 ﻿using Uinsure.TechnicalTest.Domain.Entities;
 using Uinsure.TechnicalTest.Domain.Enums;
-using Uninsure.TechnicalTest.Common.SharedKernal;
+using Uninsure.TechnicalTest.Common;
 
 namespace Uinsure.TechnicalTest.Domain.Agregates;
 
@@ -22,7 +22,6 @@ public class Policy : AggregateRoot<Guid>
         DateTimeOffset startDate, 
         InsuranceType insuranceType,
         decimal amount, 
-        bool hasClaims, 
         bool autoRenew): base()
     {
         Id = Guid.NewGuid();
@@ -30,8 +29,9 @@ public class Policy : AggregateRoot<Guid>
         EndDate = startDate.AddYears(1);
         InsuranceType = insuranceType;
         Amount = amount;
-        HasClaims = hasClaims;
+        HasClaims = false;
         AutoRenew = autoRenew;
+        CreatedDate = DateTimeOffset.UtcNow;
     }
 
     public void AddPolicyHolder(Policyholder policyholder)

@@ -11,7 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Uninsure.TechnicalTest.Common.SharedKernal\Uinsure.TechnicalTest.Common.SharedKernal.csproj" />
+    <ProjectReference Include="..\Uninsure.TechnicalTest.Common.SharedKernal\Uinsure.TechnicalTest.Common.csproj" />
+    <ProjectReference Include="..\Uninsure.TechnicalTest.Common\Uinsure.TechnicalTest.Common.csproj" />
   </ItemGroup>
 
 </Project>

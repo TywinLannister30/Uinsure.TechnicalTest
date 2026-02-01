@@ -1,15 +1,14 @@
-﻿namespace Uninsure.TechnicalTest.Common.SharedKernal;
+﻿namespace Uninsure.TechnicalTest.Common;
 
 public abstract class Entity<T>
 {
     public T Id { get; protected set; }
-    public DateTimeOffset CreatedDate { get; private set; }
+    public DateTimeOffset CreatedDate { get; protected set; }
 
     protected Entity() { }
 
     protected Entity(T id) 
     { 
         Id = id;
-        CreatedDate = DateTimeOffset.UtcNow;
     }
 }

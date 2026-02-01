@@ -1,4 +1,4 @@
-﻿using Uninsure.TechnicalTest.Common.SharedKernal;
+﻿using Uninsure.TechnicalTest.Common;
 
 namespace Uinsure.TechnicalTest.Domain.Entities;
 
@@ -19,5 +19,6 @@ public class Property : Entity<long>
         AddressLine3 = addressLine3;
         Postcode = postcode;
         PolicyId = policyId;
+        CreatedDate = DateTimeOffset.UtcNow;
     }
 }

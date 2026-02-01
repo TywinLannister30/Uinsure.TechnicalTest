@@ -1,11 +1,14 @@
 using Asp.Versioning;
 using Asp.Versioning.Routing;
 using Uinsure.TechnicalTest.API.Extensions;
+using Uinsure.TechnicalTest.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "Configuration"));
 builder.Configuration.AddJsonFile("ConnectionStrings.json");
+builder.Configuration.AddJsonFile("ApplicationSettings.json");
+builder.Configuration.AddEnvironmentVariables();
 
 var connectionString = builder.Configuration.GetConnectionString("PolicyContext");
 
@@ -16,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDatabaseContext(connectionString);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.Configure<PolicySettings>(builder.Configuration.GetSection("PolicySettings"));
 
 builder.Services.AddApiVersioning(options =>
 {

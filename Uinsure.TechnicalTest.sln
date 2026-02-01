@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.API", "Uinsure.TechnicalTest\Uinsure.TechnicalTest.API.csproj", "{5C7AFEBC-59ED-4E4F-94DE-B0E72508716A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.API", "Uinsure.TechnicalTest.API\Uinsure.TechnicalTest.API.csproj", "{5C7AFEBC-59ED-4E4F-94DE-B0E72508716A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.Domain", "Uinsure.TechnicalTest.Domain\Uinsure.TechnicalTest.Domain.csproj", "{4DEF735D-8CCB-4ADF-B1CE-4EA6D1692A69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.Common.SharedKernal", "Uninsure.TechnicalTest.Common.SharedKernal\Uinsure.TechnicalTest.Common.SharedKernal.csproj", "{BA3AEA99-0793-427D-8001-C5F1754CEC16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.Common", "Uninsure.TechnicalTest.Common\Uinsure.TechnicalTest.Common.csproj", "{BA3AEA99-0793-427D-8001-C5F1754CEC16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.Infrastructure.EntityFramework", "Uinsure.TechnicalTest.Infrastructure.EntityFramework\Uinsure.TechnicalTest.Infrastructure.EntityFramework.csproj", "{87DC335C-3739-41D1-909A-FEBB3EA7A11B}"
 EndProject
@@ -16,6 +16,12 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Uinsure.TechnicalTest.Database", "Uinsure.TechnicalTest.Database\Uinsure.TechnicalTest.Database.sqlproj", "{E419343B-4779-425E-8832-19040BCA64A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D0152287-00A0-4D99-AEDC-5D0594CEA251}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.AcceptanceTests", "Uinsure.TechnicalTest.AcceptanceTests\Uinsure.TechnicalTest.AcceptanceTests.csproj", "{DA6FC084-B0D8-49C7-95C3-8959B58FD605}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uinsure.TechnicalTest.UnitTests", "Uinsure.TechnicalTest.UnitTests\Uinsure.TechnicalTest.UnitTests.csproj", "{D9344736-2E80-4A3A-830B-0C100D317334}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +55,14 @@ Global
 		{E419343B-4779-425E-8832-19040BCA64A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E419343B-4779-425E-8832-19040BCA64A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E419343B-4779-425E-8832-19040BCA64A5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{DA6FC084-B0D8-49C7-95C3-8959B58FD605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA6FC084-B0D8-49C7-95C3-8959B58FD605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA6FC084-B0D8-49C7-95C3-8959B58FD605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA6FC084-B0D8-49C7-95C3-8959B58FD605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9344736-2E80-4A3A-830B-0C100D317334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9344736-2E80-4A3A-830B-0C100D317334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9344736-2E80-4A3A-830B-0C100D317334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9344736-2E80-4A3A-830B-0C100D317334}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +74,8 @@ Global
 		{87DC335C-3739-41D1-909A-FEBB3EA7A11B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{65DC2389-F23D-4197-878A-8DC7EFF4D933} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{E419343B-4779-425E-8832-19040BCA64A5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{DA6FC084-B0D8-49C7-95C3-8959B58FD605} = {D0152287-00A0-4D99-AEDC-5D0594CEA251}
+		{D9344736-2E80-4A3A-830B-0C100D317334} = {D0152287-00A0-4D99-AEDC-5D0594CEA251}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08AC199E-3B8F-4A7B-8211-B8CC704BF560}

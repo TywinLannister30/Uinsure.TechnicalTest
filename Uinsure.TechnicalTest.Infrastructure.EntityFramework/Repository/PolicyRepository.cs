@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Uinsure.TechnicalTest.Domain.Agregates;
 using Uinsure.TechnicalTest.Domain.Repository;
 using Uinsure.TechnicalTest.Infrastructure.EntityFramework.Context;
@@ -12,5 +13,10 @@ public class PolicyRepository(IPolicyDbContext dbContext) : IPolicyRepository
 
         await dbContext.Policies.AddAsync(policy, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<Policy?> GetByIdAsync(Guid policyId)
+    {
+        return await dbContext.Policies.FirstOrDefaultAsync(x => x.Id == policyId);
     }
 }

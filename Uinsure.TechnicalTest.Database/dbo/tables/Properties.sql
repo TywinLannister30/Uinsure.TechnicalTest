@@ -5,7 +5,7 @@
 	[AddressLine2]	VARCHAR(MAX)			NOT NULL,
 	[AddressLine3]	VARCHAR(MAX)			NOT NULL,
 	[Postcode]		VARCHAR(8)				NOT NULL,
-	[CreatedDate]	DATETIME2				NOT NULL,
+	[CreatedDate]	DATETIMEOFFSET(7)		NOT NULL,
 	[PolicyId]		UNIQUEIDENTIFIER		NOT NULL,
 	CONSTRAINT [PK_dbo.Properties] PRIMARY KEY CLUSTERED ([Id] ASC),
 	CONSTRAINT [FK_dbo.Properties_dbo.Policies_PolicyId] FOREIGN KEY ([PolicyId]) REFERENCES [dbo].[Policies]([Id]) ON DELETE CASCADE

@@ -1,4 +1,4 @@
-﻿using Uninsure.TechnicalTest.Common.SharedKernal;
+﻿using Uninsure.TechnicalTest.Common;
 
 namespace Uinsure.TechnicalTest.Domain.Entities;
 
@@ -17,5 +17,6 @@ public class Policyholder : Entity<long>
         LastName = lastName;
         DateOfBirth = dateOfBirth;
         PolicyId = policyId;
+        CreatedDate = DateTimeOffset.UtcNow;
     }
 }

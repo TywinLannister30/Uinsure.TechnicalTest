@@ -1,5 +1,5 @@
 ﻿using Uinsure.TechnicalTest.Domain.Enums;
-using Uninsure.TechnicalTest.Common.SharedKernal;
+using Uninsure.TechnicalTest.Common;
 
 namespace Uinsure.TechnicalTest.Domain.Entities;
 
@@ -18,5 +18,6 @@ public class Payment : Entity<long>
         Type = type;
         Amount = amount;
         PolicyId = policyId;
+        CreatedDate = DateTimeOffset.UtcNow;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Uninsure.TechnicalTest.Common.SharedKernal;
+﻿namespace Uninsure.TechnicalTest.Common;
 
 public abstract class AggregateRoot<T>: Entity<T>
 {

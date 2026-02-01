@@ -1,0 +1,7 @@
+{
+  "PolicySettings": {
+    "MaxStartDateAdvanceDays": 60,
+    "MaxPolicyholders": 3,
+    "MaxPostcodeLength": 8
+  }
+}

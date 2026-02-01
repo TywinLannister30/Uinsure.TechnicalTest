@@ -1,0 +1,8 @@
+namespace Uinsure.TechnicalTest.Application.Configuration;
+
+public class PolicySettings
+{
+    public int MaxStartDateAdvanceDays { get; set; }
+    public int MaxPolicyholders { get; set; }
+    public int MaxPostcodeLength { get; set; }
+}

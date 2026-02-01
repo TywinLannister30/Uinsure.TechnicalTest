@@ -2,10 +2,10 @@
 (
 	[Id]			UNIQUEIDENTIFIER	NOT NULL PRIMARY KEY,
 	[InsuranceType] INT					NOT NULL,
-	[StartDate]		DATETIME2			NOT NULL,
-	[EndDate]		DATETIME2			NOT NULL,
+	[StartDate]		DATETIMEOFFSET(7)	NOT NULL,
+	[EndDate]		DATETIMEOFFSET(7)	NOT NULL,
 	[Amount]		DECIMAL(18,2)		NOT NULL,
 	[HasClaims]		BIT					NOT NULL,
 	[AutoRenew]		BIT					NOT NULL,
-	[CreatedDate]	DATETIME2			NOT NULL
+	[CreatedDate]	DATETIMEOFFSET(7)	NOT NULL
 );
