@@ -24,9 +24,9 @@ public class PolicyController(IPolicyService policyService) : Controller
         return Ok(result);
     }
 
-    [HttpGet("policyId")]
+    [HttpGet("{policyId:guid}")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PolicyDto))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IActionResult))]
+    [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(IActionResult))]
     public async Task<IActionResult> Get(Guid policyId)
     {
         var result = await _policyService.GetPolicyAsync(policyId);

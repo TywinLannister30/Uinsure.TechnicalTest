@@ -186,18 +186,52 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    [Theory]
-    //[InlineData(null)]
-    [InlineData("")]
-    public async Task When_PolicyCreatedWithPropertyMissingAddressLine1_Expect_BadRequest(string? input)
+    [Fact]
+    public async Task When_PolicyCreatedWithPropertyMissingAddressLine1_Expect_BadRequest()
     {
         var dto = BuildValidRequest();
-        dto.Property.AddressLine1 = input;
+        dto.Property.AddressLine1 = string.Empty;
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
         var response = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(request);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task When_PolicyCreatedWithPropertyMissingPostcode_Expect_BadRequest()
+    {
+        var dto = BuildValidRequest();
+        dto.Property.Postcode = string.Empty;
+
+        var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var response = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task When_PolicyCreatedWithPropertyPostcodeTooLong_Expect_BadRequest()
+    {
+        var dto = BuildValidRequest();
+        dto.Property.Postcode = "123456789";
+
+        var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var response = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task When_PolicyCreatedWithPropertyPostcodeMaxLength_Expect_OK()
+    {
+        var dto = BuildValidRequest();
+        dto.Property.Postcode = "12345678";
+
+        var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var response = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     private static CreatePolicyRequestDto BuildValidRequest() => new()
