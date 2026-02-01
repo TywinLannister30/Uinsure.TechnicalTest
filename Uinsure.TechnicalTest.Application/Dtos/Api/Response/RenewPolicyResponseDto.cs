@@ -14,4 +14,7 @@ public class RenewPolicyResponseDto
 
     [JsonIgnore]
     public bool PolicyEnded { get; set; }
+
+    [JsonIgnore]
+    public bool PaymentMethodAllowed { get; set; } = true;
 }

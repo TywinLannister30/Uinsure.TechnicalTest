@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
+using System.Linq;
 using Uinsure.TechnicalTest.Application.Configuration;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Response;
 using Uinsure.TechnicalTest.Application.Mappers;
+using Uinsure.TechnicalTest.Domain.Agregates;
 using Uinsure.TechnicalTest.Domain.Enums;
 using Uinsure.TechnicalTest.Domain.Repository;
 
@@ -15,10 +17,16 @@ public class PolicyRenewalService(IPolicyRepository policyRepository, IOptions<P
 
     public async Task<RenewPolicyResponseDto?> RenewPolicyAsync(Guid policyId, RenewPolicyRequestDto request)
     {
+        if (_policySettings.Value.RenewalAutoPaymentMethodsAllowed == null)
+            throw new ArgumentNullException("PolicySettings configuration is missing.");
+
         var policy = await _policyRepository.GetByIdAsync(policyId);
 
         if (policy is null)
             return null;
+
+        if (policy.HasAutoRenew() && !_policySettings.Value.RenewalAutoPaymentMethodsAllowed.Contains(Enum.Parse<PaymentType>(request.Payment.PaymentType, ignoreCase: true)))
+            return new RenewPolicyResponseDto { PaymentMethodAllowed = false };
 
         if (policy.IsCancelled())
             return new RenewPolicyResponseDto { AlreadyCancelled = true };

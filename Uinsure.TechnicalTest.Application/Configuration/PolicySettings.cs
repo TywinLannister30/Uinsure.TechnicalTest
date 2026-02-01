@@ -1,3 +1,5 @@
+using Uinsure.TechnicalTest.Domain.Enums;
+
 namespace Uinsure.TechnicalTest.Application.Configuration;
 
 public class PolicySettings
@@ -7,4 +9,5 @@ public class PolicySettings
     public int MaxPolicyholders { get; set; }
     public int MaxPostcodeLength { get; set; }
     public int RenewalWindowDays { get; set; }
+    public List<PaymentType>? RenewalAutoPaymentMethodsAllowed { get; set; }
 }

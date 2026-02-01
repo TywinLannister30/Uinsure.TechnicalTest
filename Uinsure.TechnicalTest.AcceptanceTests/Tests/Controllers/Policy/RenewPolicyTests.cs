@@ -67,6 +67,101 @@ public class RenewPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtu
     }
 
     [Theory]
+    [InlineData(30)]
+    [InlineData(25)]
+    [InlineData(10)]
+    [InlineData(1)]
+    public async Task When_PolicyRenewedWithinWindowAndChequeWasUsedForAutoRenew_Expect_UnprocessableEntity(int numDays)
+    {
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
+
+        var postRequest = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var postResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(postRequest);
+
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        Assert.NotNull(postResponse.Data);
+
+        await Task.Delay(500);
+
+        // hack as dto vadiation prevents us adding policies in the past.
+        var amendedEndDate = DateTimeOffset.UtcNow.AddDays(numDays);
+        var amendedStartDate = amendedEndDate.AddYears(-1);
+
+        await _databaseFixture.ExecuteAsync($"""
+            UPDATE [UinsureTechnicalTest].[dbo].[Policies]
+            SET StartDate = '{amendedStartDate.UtcDateTime:O}', EndDate = '{amendedEndDate.UtcDateTime:O}'
+            WHERE Id = '{postResponse.Data.UniqueReference}'
+        """);
+
+        var renewRequestDto = new RenewPolicyRequestDto
+        {
+            Payment = new PaymentDto
+            {
+                Reference = "Reference",
+                PaymentType = PaymentType.Cheque.ToString(),
+                Amount = 199.99m
+            }
+        };
+        var renewRequest = new RestRequest($"api/v1/policy/{postResponse.Data.UniqueReference}/renew", Method.Put).AddJsonBody(renewRequestDto);
+        var renewResponse = await _httpClientFixture.Client.ExecuteAsync<RenewPolicyResponseDto>(renewRequest);
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, renewResponse.StatusCode);
+    }
+
+    [Theory]
+    [InlineData(30)]
+    [InlineData(25)]
+    [InlineData(10)]
+    [InlineData(1)]
+    public async Task When_PolicyRenewedWithinWindowAndChequeWasUsedForNonAutoRenew_Expect_OkWithCorrectInformation(int numDays)
+    {
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
+        dto.AutoRenew = false;
+
+        var postRequest = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
+        var postResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(postRequest);
+
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        Assert.NotNull(postResponse.Data);
+
+        await Task.Delay(500);
+
+        // hack as dto vadiation prevents us adding policies in the past.
+        var amendedEndDate = DateTimeOffset.UtcNow.AddDays(numDays);
+        var amendedStartDate = amendedEndDate.AddYears(-1);
+
+        await _databaseFixture.ExecuteAsync($"""
+            UPDATE [UinsureTechnicalTest].[dbo].[Policies]
+            SET StartDate = '{amendedStartDate.UtcDateTime:O}', EndDate = '{amendedEndDate.UtcDateTime:O}'
+            WHERE Id = '{postResponse.Data.UniqueReference}'
+        """);
+
+        var renewRequestDto = new RenewPolicyRequestDto
+        {
+            Payment = new PaymentDto
+            {
+                Reference = "Reference",
+                PaymentType = PaymentType.Cheque.ToString(),
+                Amount = 199.99m
+            }
+        };
+        var renewRequest = new RestRequest($"api/v1/policy/{postResponse.Data.UniqueReference}/renew", Method.Put).AddJsonBody(renewRequestDto);
+        var renewResponse = await _httpClientFixture.Client.ExecuteAsync<RenewPolicyResponseDto>(renewRequest);
+
+        Assert.Equal(HttpStatusCode.OK, renewResponse.StatusCode);
+        Assert.NotNull(renewResponse.Data);
+
+        Assert.Equal(amendedStartDate, renewResponse.Data.Policy.StartDate);
+        Assert.Equal(amendedEndDate.AddYears(1), renewResponse.Data.Policy.EndDate);
+        Assert.Equal(199.99m, renewResponse.Data.Policy.Amount);
+        Assert.False(renewResponse.Data.Policy.HasClaims);
+        Assert.Equal(dto.AutoRenew, renewResponse.Data.Policy.AutoRenew);
+
+        var payments = renewResponse.Data.Policy.Payments;
+        Assert.Single(payments);
+    }
+
+    [Theory]
     [InlineData(31)]
     [InlineData(40)]
     [InlineData(200)]

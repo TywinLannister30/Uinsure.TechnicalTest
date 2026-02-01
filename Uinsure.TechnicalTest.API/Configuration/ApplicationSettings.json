@@ -4,6 +4,7 @@
     "MaxStartDateAdvanceDays": 60,
     "MaxPolicyholders": 3,
     "MaxPostcodeLength": 8,
-    "RenewalWindowDays": 30
+    "RenewalWindowDays": 30,
+    "RenewalAutoPaymentMethodsAllowed": [ "Card", "DirectDebit" ]
   }
 }

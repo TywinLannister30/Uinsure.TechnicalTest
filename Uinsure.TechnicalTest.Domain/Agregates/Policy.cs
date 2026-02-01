@@ -86,4 +86,9 @@ public class Policy : AggregateRoot<Guid>
     {
         return HasClaims;
     }
+
+    public bool HasAutoRenew()
+    {
+        return AutoRenew;
+    }
 }

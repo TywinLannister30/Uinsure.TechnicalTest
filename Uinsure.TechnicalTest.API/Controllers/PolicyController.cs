@@ -101,6 +101,9 @@ public class PolicyController(
         if (result.AlreadyCancelled)
             return UnprocessableEntity($"Policy with id {policyId} is already cancelled and cannot be renewed.");
 
+        if (!result.PaymentMethodAllowed)
+            return UnprocessableEntity($"{request.Payment.PaymentType} cannot be used to pay for auto renewals.");
+
         if (!result.IsInRenewalWindow)
             return UnprocessableEntity($"Policy with id {policyId} is not inside the renewal window.");
 
