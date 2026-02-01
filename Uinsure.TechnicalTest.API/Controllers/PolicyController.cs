@@ -65,6 +65,25 @@ public class PolicyController(
         return Ok(result);
     }
 
+    // This is to enable COULD 1 - Calculate the cost to cancel a policy before the policy has actually been cancelled.
+    // Making this a POST as we could store and retrieve these.
+    [HttpPost("{policyId:guid}/cancellation-quote")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CancellationQuoteResponseDto))]
+    [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(IActionResult))]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity, Type = typeof(IActionResult))]
+    public async Task<IActionResult> CancellationQuote(Guid policyId, CancelPolicyRequestDto request)
+    {
+        var result = await _policyCancellationService.CancelPolicyAsync(policyId, request, actionRefund: false);
+
+        if (result is null)
+            return NotFound($"Policy with id {policyId} does not exist.");
+
+        if (result.AlreadyCancelled)
+            return UnprocessableEntity($"Policy with id {policyId} is already cancelled.");
+
+        return Ok(result);
+    }
+
     [HttpPut("{policyId:guid}/renew")]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RenewPolicyResponseDto))]
     [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(IActionResult))]

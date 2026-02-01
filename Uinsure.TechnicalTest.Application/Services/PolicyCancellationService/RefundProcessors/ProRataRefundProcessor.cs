@@ -6,7 +6,7 @@ namespace Uinsure.TechnicalTest.Application.Services.PolicyCancellationService.R
 
 public class ProRataRefundProcessor : IRefundProcessor
 {
-    public Payment Process(Policy policy)
+    public Payment Process(Policy policy, DateTimeOffset cancellationDate)
     {
         // Messy calculator here - just assuming we want to divide up the year and refund evenly for unused.
         var initialPayment = policy.Payments.OrderBy(x => x.CreatedDate).First(x => x.TransactionType == TransactionType.Payment);
@@ -14,7 +14,7 @@ public class ProRataRefundProcessor : IRefundProcessor
 
         var start = policy.StartDate.UtcDateTime.Date;
         var end = policy.EndDate.UtcDateTime.Date;
-        var cancel = policy.CancellationDate.Value.UtcDateTime.Date;
+        var cancel = cancellationDate.UtcDateTime.Date;
 
         var totalDays = (end - start).Days;
 

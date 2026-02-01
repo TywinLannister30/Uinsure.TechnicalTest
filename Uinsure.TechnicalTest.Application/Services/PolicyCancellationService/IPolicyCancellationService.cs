@@ -5,5 +5,5 @@ namespace Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
 
 public interface IPolicyCancellationService
 {
-    Task<CancelPolicyResponseDto?> CancelPolicyAsync(Guid policyId, CancelPolicyRequestDto request);
+    Task<CancelPolicyResponseDto?> CancelPolicyAsync(Guid policyId, CancelPolicyRequestDto request, bool actionRefund = true);
 }

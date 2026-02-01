@@ -6,7 +6,7 @@ namespace Uinsure.TechnicalTest.Application.Services.PolicyCancellationService.R
 
 public class FullRefundProcessor : IRefundProcessor
 {
-    public Payment Process(Policy policy)
+    public Payment Process(Policy policy, DateTimeOffset cancellationDate)
     {
         var initialPayment = policy.Payments.OrderBy(x => x.CreatedDate).First(x => x.TransactionType == TransactionType.Payment);
 

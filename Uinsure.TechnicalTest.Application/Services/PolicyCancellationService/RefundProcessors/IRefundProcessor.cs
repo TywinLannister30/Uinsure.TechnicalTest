@@ -5,5 +5,5 @@ namespace Uinsure.TechnicalTest.Application.Services.PolicyCancellationService.R
 
 public interface IRefundProcessor
 {
-    Payment Process(Policy policy);
+    Payment Process(Policy policy, DateTimeOffset cancellationDate);
 }

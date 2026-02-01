@@ -2,7 +2,6 @@
 using Uinsure.TechnicalTest.Application.Dtos.Api.Response;
 using Uinsure.TechnicalTest.Application.Mappers;
 using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService.Factories;
-using Uinsure.TechnicalTest.Domain.Enums;
 using Uinsure.TechnicalTest.Domain.Repository;
 
 namespace Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
@@ -12,7 +11,7 @@ public class PolicyCancellationService(IPolicyRepository policyRepository, IRefu
     private readonly IPolicyRepository _policyRepository = policyRepository;
     private readonly IRefundProcessorFactory _refundProcessorFactory = refundProcessorFactory;
 
-    public async Task<CancelPolicyResponseDto?> CancelPolicyAsync(Guid policyId, CancelPolicyRequestDto request)
+    public async Task<CancelPolicyResponseDto?> CancelPolicyAsync(Guid policyId, CancelPolicyRequestDto request, bool actionRefund = true)
     {
         var policy = await _policyRepository.GetByIdAsync(policyId);
 
@@ -27,17 +26,24 @@ public class PolicyCancellationService(IPolicyRepository policyRepository, IRefu
         if (refundProcessor is null)
             throw new InvalidOperationException($"No refund processor found for policy starting {policy.StartDate} and cancellation date {request.CancellationDate}.");
 
-        policy.Cancel(request.CancellationDate);
+        var refund = refundProcessor.Process(policy, request.CancellationDate);
 
-        var refund = refundProcessor.Process(policy);
+        if (actionRefund)
+        {
+            policy.Cancel(request.CancellationDate);
+            policy.AddPayment(refund);
 
-        policy.AddPayment(refund);
+            await _policyRepository.SaveChangesAsync();
 
-        await _policyRepository.SaveChangesAsync();
+            return new CancelPolicyResponseDto
+            {
+                Policy = policy.ToDto(),
+                RefundAmount = Math.Abs(refund.Amount),
+            };
+        }
 
         return new CancelPolicyResponseDto
         {
-            Policy = policy.ToDto(),
             RefundAmount = Math.Abs(refund.Amount),
         };
     }
