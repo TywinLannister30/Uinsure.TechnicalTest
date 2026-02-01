@@ -5,24 +5,29 @@ using Uinsure.TechnicalTest.Application.Dtos;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Response;
 using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
-using Uinsure.TechnicalTest.Application.Services.PolicyService;
+using Uinsure.TechnicalTest.Application.Services.PolicyCreationService;
+using Uinsure.TechnicalTest.Application.Services.PolicyRetrievalService;
 
 namespace Uinsure.TechnicalTest.API.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/policy")]
-public class PolicyController(IPolicyService policyService, IPolicyCancellationService policyCancellationService) : Controller
+public class PolicyController(
+    IPolicyCreationService policyCreationService, 
+    IPolicyCancellationService policyCancellationService,
+    IPolicyRetrievalService policyRetrievalService) : Controller
 {
     IPolicyCancellationService _policyCancellationService = policyCancellationService;
-    IPolicyService _policyService = policyService;
+    IPolicyCreationService _policyCreationService = policyCreationService;
+    IPolicyRetrievalService _policyRetrievalService = policyRetrievalService;
 
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PolicyDto))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IActionResult))]
     public async Task<IActionResult> Post(CreatePolicyRequestDto request)
     {
-        var result = await _policyService.CreatePolicyAsync(request);
+        var result = await _policyCreationService.CreatePolicyAsync(request);
 
         return Ok(result);
     }
@@ -32,7 +37,7 @@ public class PolicyController(IPolicyService policyService, IPolicyCancellationS
     [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(IActionResult))]
     public async Task<IActionResult> Get(Guid policyId)
     {
-        var result = await _policyService.GetPolicyAsync(policyId);
+        var result = await _policyRetrievalService.GetPolicyAsync(policyId);
 
         if (result is null)
             return NotFound($"Policy with id {policyId} does not exist.");

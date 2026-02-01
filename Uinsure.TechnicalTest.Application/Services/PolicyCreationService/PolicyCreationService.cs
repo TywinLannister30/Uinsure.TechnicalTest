@@ -5,9 +5,9 @@ using Uinsure.TechnicalTest.Domain.Agregates;
 using Uinsure.TechnicalTest.Domain.Enums;
 using Uinsure.TechnicalTest.Domain.Repository;
 
-namespace Uinsure.TechnicalTest.Application.Services.PolicyService;
+namespace Uinsure.TechnicalTest.Application.Services.PolicyCreationService;
 
-public class PolicyService(IPolicyRepository policyRepository) : IPolicyService
+public class PolicyCreationService(IPolicyRepository policyRepository) : IPolicyCreationService
 {
     private readonly IPolicyRepository _policyRepository = policyRepository;
 
@@ -25,16 +25,6 @@ public class PolicyService(IPolicyRepository policyRepository) : IPolicyService
         policy.AddProperty(request.Property?.ToDomain(policy.Id));
 
         await _policyRepository.SaveAsync(policy);
-
-        return policy.ToDto();
-    }
-
-    public async Task<PolicyDto?> GetPolicyAsync(Guid policyId)
-    {
-        var policy = await _policyRepository.GetByIdAsync(policyId);
-
-        if (policy is null)
-            return null;
 
         return policy.ToDto();
     }
