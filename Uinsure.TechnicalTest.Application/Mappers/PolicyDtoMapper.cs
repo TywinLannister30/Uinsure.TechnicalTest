@@ -12,6 +12,7 @@ public static class PolicyDtoMapper
             UniqueReference = policy.Id,
             StartDate = policy.StartDate,
             EndDate = policy.EndDate,
+            State = policy.State.ToString(),
             InsuranceType = policy.InsuranceType.ToString(),
             Amount = policy.Amount,
             HasClaims = policy.HasClaims,
@@ -36,7 +37,8 @@ public static class PolicyDtoMapper
                 AddressLine2 = policy.Property.AddressLine2 ?? string.Empty,
                 AddressLine3 = policy.Property.AddressLine3 ?? string.Empty,
                 Postcode = policy.Property.Postcode ?? string.Empty
-            }
+            },
+            CancellationDate = policy.CancellationDate,
         };
     }
 }

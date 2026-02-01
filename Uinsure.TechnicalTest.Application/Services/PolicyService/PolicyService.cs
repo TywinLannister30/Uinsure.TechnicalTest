@@ -16,14 +16,12 @@ public class PolicyService(IPolicyRepository policyRepository) : IPolicyService
         var policy = new Policy(
             request.StartDate,
             Enum.Parse<InsuranceType>(request.InsuranceType, ignoreCase: true),
-            request.Payment.Amount,
-            request.AutoRenew
-            );
+            request.AutoRenew);
 
         foreach (var policyholder in request.Policyholders)
             policy.AddPolicyHolder(policyholder.ToDomain(policy.Id));
 
-        policy.AddPayment(request.Payment.ToDomain(policy.Id));
+        policy.AddPayment(request.Payment.ToDomain(policy.Id, TransactionType.Payment));
         policy.AddProperty(request.Property?.ToDomain(policy.Id));
 
         await _policyRepository.SaveAsync(policy);
@@ -31,12 +29,12 @@ public class PolicyService(IPolicyRepository policyRepository) : IPolicyService
         return policy.ToDto();
     }
 
-    public async Task<PolicyDto> GetPolicyAsync(Guid policyId)
+    public async Task<PolicyDto?> GetPolicyAsync(Guid policyId)
     {
         var policy = await _policyRepository.GetByIdAsync(policyId);
 
         if (policy is null)
-            return null!;
+            return null;
 
         return policy.ToDto();
     }

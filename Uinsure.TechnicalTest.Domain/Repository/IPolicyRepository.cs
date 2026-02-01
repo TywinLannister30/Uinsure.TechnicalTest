@@ -6,4 +6,5 @@ public interface IPolicyRepository
 {
     Task SaveAsync(Policy policy, CancellationToken cancellationToken = default);
     Task<Policy?> GetByIdAsync(Guid policyId);
+    Task SaveChangesAsync();
 }

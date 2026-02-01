@@ -19,4 +19,9 @@ public class PolicyRepository(IPolicyDbContext dbContext) : IPolicyRepository
     {
         return await dbContext.Policies.FirstOrDefaultAsync(x => x.Id == policyId);
     }
+
+    public async Task SaveChangesAsync()
+    {
+        await dbContext.SaveChangesAsync();
+    }
 }

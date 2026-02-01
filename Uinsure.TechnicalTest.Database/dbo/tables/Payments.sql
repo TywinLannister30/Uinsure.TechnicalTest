@@ -4,6 +4,7 @@
 	[PaymentReference]	VARCHAR(50)				NOT NULL,
 	[Type]				INT						NOT NULL,
 	[Amount]			DECIMAL(18,2)			NOT NULL,
+	[TransactionType]	INT						NOT NULL,
 	[CreatedDate]		DATETIMEOFFSET(7)		NOT NULL,
 	[PolicyId]			UNIQUEIDENTIFIER		NOT NULL,
 	CONSTRAINT [PK_dbo.Payments] PRIMARY KEY CLUSTERED ([Id] ASC),

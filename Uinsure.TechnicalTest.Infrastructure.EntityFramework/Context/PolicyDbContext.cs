@@ -19,6 +19,7 @@ public class PolicyDbContext(DbContextOptions options) : DbContext(options), IPo
             entity.HasKey(e => e.Id);
             entity.Property(e => e.StartDate).HasColumnType("datetimeoffset");
             entity.Property(e => e.EndDate).HasColumnType("datetimeoffset");
+            entity.Property(e => e.State);
             entity.Property(e => e.InsuranceType);
             entity.Property(e => e.Amount);
             entity.Property(e => e.HasClaims);
@@ -61,6 +62,7 @@ public class PolicyDbContext(DbContextOptions options) : DbContext(options), IPo
             entity.Property(e => e.PaymentReference);
             entity.Property(e => e.Type);
             entity.Property(e => e.CreatedDate).HasColumnType("datetimeoffset");
+            entity.Property(e => e.TransactionType);
             entity.Property(e => e.PolicyId);
             entity.HasOne<Policy>().WithMany(p => p.Payments).HasForeignKey("PolicyId").HasPrincipalKey(x => x.Id).OnDelete(DeleteBehavior.Cascade);
         });

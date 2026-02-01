@@ -6,5 +6,5 @@ namespace Uinsure.TechnicalTest.Application.Services.PolicyService;
 public interface IPolicyService
 {
     Task<PolicyDto> CreatePolicyAsync(CreatePolicyRequestDto request);
-    Task<PolicyDto> GetPolicyAsync(Guid policyId);
+    Task<PolicyDto?> GetPolicyAsync(Guid policyId);
 }

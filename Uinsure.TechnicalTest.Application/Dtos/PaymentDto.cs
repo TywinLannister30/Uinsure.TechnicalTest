@@ -9,10 +9,16 @@ public class PaymentDto : IValidatableObject
     public string Reference { get; set; } = string.Empty;
     public string PaymentType { get; set; } = string.Empty;
     public decimal Amount { get; set; }
+    public string TransactionType { get; set; } = string.Empty;
 
-    internal Payment ToDomain(Guid policyId)
+    internal Payment ToDomain(Guid policyId, TransactionType transactionType)
     {
-        return new Payment(Reference, Enum.Parse<PaymentType>(PaymentType, ignoreCase: true), Amount, policyId);
+        return new Payment(
+            Reference, 
+            Enum.Parse<PaymentType>(PaymentType, ignoreCase: true), 
+            Amount,
+            transactionType, 
+            policyId);
     }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

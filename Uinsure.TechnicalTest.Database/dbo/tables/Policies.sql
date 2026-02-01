@@ -1,11 +1,13 @@
 ﻿CREATE TABLE [dbo].[Policies]
 (
-	[Id]			UNIQUEIDENTIFIER	NOT NULL PRIMARY KEY,
-	[InsuranceType] INT					NOT NULL,
-	[StartDate]		DATETIMEOFFSET(7)	NOT NULL,
-	[EndDate]		DATETIMEOFFSET(7)	NOT NULL,
-	[Amount]		DECIMAL(18,2)		NOT NULL,
-	[HasClaims]		BIT					NOT NULL,
-	[AutoRenew]		BIT					NOT NULL,
-	[CreatedDate]	DATETIMEOFFSET(7)	NOT NULL
+	[Id]				UNIQUEIDENTIFIER	NOT NULL PRIMARY KEY,
+	[InsuranceType]		INT					NOT NULL,
+	[StartDate]			DATETIMEOFFSET(7)	NOT NULL,
+	[EndDate]			DATETIMEOFFSET(7)	NOT NULL,
+	[Amount]			DECIMAL(18,2)		NOT NULL,
+	[HasClaims]			BIT					NOT NULL,
+	[AutoRenew]			BIT					NOT NULL,
+	[State]				INT					NOT NULL,
+	[CancellationDate]	DATETIMEOFFSET(7)	NULL,
+	[CreatedDate]		DATETIMEOFFSET(7)	NOT NULL
 );
