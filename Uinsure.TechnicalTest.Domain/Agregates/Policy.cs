@@ -61,4 +61,19 @@ public class Policy : AggregateRoot<Guid>
     {
         return State == PolicyState.Cancelled;
     }
+
+    public bool WithinRenewalWindow(int renewalWindowDays, DateTimeOffset now)
+    {
+        return EndDate >= now && EndDate <= now.AddDays(renewalWindowDays);
+    }
+
+    public bool IsEnded(DateTimeOffset now)
+    {
+        return EndDate < now;
+    }
+
+    public void Renew()
+    {
+        EndDate = EndDate.AddYears(1);
+    }
 }

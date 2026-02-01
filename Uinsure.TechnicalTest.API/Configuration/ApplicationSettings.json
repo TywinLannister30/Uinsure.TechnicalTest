@@ -3,6 +3,7 @@
     "CoolingOffPeriodDays": 14,
     "MaxStartDateAdvanceDays": 60,
     "MaxPolicyholders": 3,
-    "MaxPostcodeLength": 8
+    "MaxPostcodeLength": 8,
+    "RenewalWindowDays": 30
   }
 }

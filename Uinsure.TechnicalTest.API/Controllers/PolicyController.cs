@@ -6,6 +6,7 @@ using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Response;
 using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
 using Uinsure.TechnicalTest.Application.Services.PolicyCreationService;
+using Uinsure.TechnicalTest.Application.Services.PolicyRenewalService;
 using Uinsure.TechnicalTest.Application.Services.PolicyRetrievalService;
 
 namespace Uinsure.TechnicalTest.API.Controllers;
@@ -16,10 +17,12 @@ namespace Uinsure.TechnicalTest.API.Controllers;
 public class PolicyController(
     IPolicyCreationService policyCreationService, 
     IPolicyCancellationService policyCancellationService,
+    IPolicyRenewalService policyRenewalService,
     IPolicyRetrievalService policyRetrievalService) : Controller
 {
     IPolicyCancellationService _policyCancellationService = policyCancellationService;
     IPolicyCreationService _policyCreationService = policyCreationService;
+    IPolicyRenewalService _policyRenewalService = policyRenewalService;
     IPolicyRetrievalService _policyRetrievalService = policyRetrievalService;
 
     [HttpPost]
@@ -58,6 +61,29 @@ public class PolicyController(
 
         if (result.AlreadyCancelled)
             return UnprocessableEntity($"Policy with id {policyId} is already cancelled.");
+
+        return Ok(result);
+    }
+
+    [HttpPut("{policyId:guid}/renew")]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RenewPolicyResponseDto))]
+    [ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(IActionResult))]
+    [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity, Type = typeof(IActionResult))]
+    public async Task<IActionResult> Renew(Guid policyId, RenewPolicyRequestDto request)
+    {
+        var result = await _policyRenewalService.RenewPolicyAsync(policyId, request);
+
+        if (result is null)
+            return NotFound($"Policy with id {policyId} does not exist.");
+
+        if (result.AlreadyCancelled)
+            return UnprocessableEntity($"Policy with id {policyId} is already cancelled and cannot be renewed.");
+
+        if (!result.IsInRenewalWindow)
+            return UnprocessableEntity($"Policy with id {policyId} is not inside the renewal window.");
+
+        if (result.PolicyEnded)
+            return UnprocessableEntity($"Policy with id {policyId} has ended and cannot be renewed.");
 
         return Ok(result);
     }
