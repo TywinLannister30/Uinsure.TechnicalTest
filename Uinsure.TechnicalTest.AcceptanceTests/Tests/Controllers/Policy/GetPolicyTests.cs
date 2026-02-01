@@ -1,22 +1,20 @@
 ﻿using RestSharp;
 using System.Net;
 using Uinsure.TechnicalTest.AcceptanceTests.Fixtures;
+using Uinsure.TechnicalTest.AcceptanceTests.Helpers;
 using Uinsure.TechnicalTest.Application.Dtos;
-using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
-using Uinsure.TechnicalTest.Domain.Enums;
 
 namespace Uinsure.TechnicalTest.AcceptanceTests.Tests.Controllers.Policy;
 
 [Collection("Acceptance tests")]
-public class GetPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixture databaseFixture)
+public class GetPolicyTests(HttpClientFixture httpClientFixture)
 {
     private readonly HttpClientFixture _httpClientFixture = httpClientFixture;
-    private readonly DatabaseFixture _databaseFixture = databaseFixture;
 
     [Fact]
     public async Task When_RetreivingExistingPolicy_Expect_OkResponseAndCorrectInformationReturned()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
 
         var postRequest = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
         var postResponse = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(postRequest);
@@ -64,33 +62,4 @@ public class GetPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixture
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
-
-    private static CreatePolicyRequestDto BuildValidRequest() => new()
-    {
-        InsuranceType = InsuranceType.Household.ToString(),
-        StartDate = DateTimeOffset.UtcNow,
-        AutoRenew = true,
-        Policyholders =
-        [
-            new PolicyholderDto
-            {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                DateOfBirth = DateTimeOffset.UtcNow.AddYears(-20),
-            }
-        ],
-        Property = new PropertyDto
-        {
-            AddressLine1 = "AddressLine1",
-            AddressLine2 = "AddressLine2",
-            AddressLine3 = "AddressLine3",
-            Postcode = "Postcode"
-        },
-        Payment = new PaymentDto
-        {
-            Reference = "Reference",
-            PaymentType = PaymentType.Card.ToString(),
-            Amount = 199.99m
-        }
-    };
 }

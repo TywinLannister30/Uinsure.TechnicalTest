@@ -9,7 +9,7 @@ public class ProRataRefundProcessor : IRefundProcessor
     public Payment Process(Policy policy)
     {
         // Messy calculator here - just assuming we want to divide up the year and refund evenly for unused.
-        var initialPayment = policy.Payments.First(x => x.TransactionType == TransactionType.Payment);
+        var initialPayment = policy.Payments.OrderBy(x => x.CreatedDate).First(x => x.TransactionType == TransactionType.Payment);
         var premium = Math.Abs(initialPayment.Amount);
 
         var start = policy.StartDate.UtcDateTime.Date;

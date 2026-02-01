@@ -8,7 +8,7 @@ public class FullRefundProcessor : IRefundProcessor
 {
     public Payment Process(Policy policy)
     {
-        var initialPayment = policy.Payments.First(x => x.TransactionType == TransactionType.Payment);
+        var initialPayment = policy.Payments.OrderBy(x => x.CreatedDate).First(x => x.TransactionType == TransactionType.Payment);
 
         return new Payment(
             $"{initialPayment.PaymentReference}-Refund",

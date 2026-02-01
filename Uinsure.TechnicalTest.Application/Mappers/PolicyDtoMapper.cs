@@ -29,7 +29,8 @@ public static class PolicyDtoMapper
                 {
                     Reference = p.PaymentReference,
                     PaymentType = p.Type.ToString(),
-                    Amount = p.Amount
+                    Amount = p.Amount,
+                    TransactionType = p.TransactionType.ToString(),
                 })],
             Property = policy.Property is null ? null : new PropertyDto
             {

@@ -1,22 +1,20 @@
 ﻿using RestSharp;
 using System.Net;
 using Uinsure.TechnicalTest.AcceptanceTests.Fixtures;
+using Uinsure.TechnicalTest.AcceptanceTests.Helpers;
 using Uinsure.TechnicalTest.Application.Dtos;
-using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
-using Uinsure.TechnicalTest.Domain.Enums;
 
 namespace Uinsure.TechnicalTest.AcceptanceTests.Tests.Controllers.Policy;
 
 [Collection("Acceptance tests")]
-public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixture databaseFixture)
+public class PostPolicyTests(HttpClientFixture httpClientFixture)
 {
     private readonly HttpClientFixture _httpClientFixture = httpClientFixture;
-    private readonly DatabaseFixture _databaseFixture = databaseFixture;
 
     [Fact]
     public async Task When_PolicyCreatedSuccessfully_Expect_OkResponseAndCorrectInformationStored()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
         var response = await _httpClientFixture.Client.ExecuteAsync<PolicyDto>(request);
@@ -50,7 +48,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithStartDateInPast_Expect_BadRequest()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.StartDate = DateTime.UtcNow.AddDays(-1);
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -62,7 +60,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithStartDate60DaysInTheFuture_Expect_OK()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.StartDate = DateTime.UtcNow.AddDays(60);
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -77,7 +75,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [InlineData(100)]
     public async Task When_PolicyCreatedWithStartDateMoreThan60DaysInTheFuture_Expect_OK(int numDays)
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.StartDate = DateTime.UtcNow.AddDays(numDays);
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -92,7 +90,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [InlineData(3)]
     public async Task When_PolicyCreatedWithCorrectNumberOfPolicyholders_Expect_OK(int numPolicyholders)
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Policyholders = [];
 
         for (int i = 0; i < numPolicyholders; i++)
@@ -117,7 +115,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [InlineData(6)]
     public async Task When_PolicyCreatedWithIncorrectCorrectNumberOfPolicyholders_Expect_BadRequest(int numPolicyholders)
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Policyholders = [];
 
         for (int i = 0; i < numPolicyholders; i++)
@@ -139,7 +137,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPolicyholderThatIsUnder16AtStartTimeOfPolicy_Expect_BadRequest()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Policyholders.First().DateOfBirth = dto.StartDate.AddYears(-16).AddDays(1);
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -151,7 +149,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPolicyholderThatIs16AtStartTimeOfPolicy_Expect_OK()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Policyholders.First().DateOfBirth = dto.StartDate.AddYears(-16);
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -163,7 +161,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPolicyholderThatIsUnder16AtStartTimeOfPolicyButOtherPolicyHolderIsOldEnough_Expect_BadRequest()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Policyholders =
         [
             new PolicyholderDto
@@ -189,7 +187,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPropertyMissingAddressLine1_Expect_BadRequest()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Property.AddressLine1 = string.Empty;
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -201,7 +199,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPropertyMissingPostcode_Expect_BadRequest()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Property.Postcode = string.Empty;
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -213,7 +211,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPropertyPostcodeTooLong_Expect_BadRequest()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Property.Postcode = "123456789";
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -225,7 +223,7 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
     [Fact]
     public async Task When_PolicyCreatedWithPropertyPostcodeMaxLength_Expect_OK()
     {
-        var dto = BuildValidRequest();
+        var dto = CreatePolicyRequestHelper.CreateValidRequest();
         dto.Property.Postcode = "12345678";
 
         var request = new RestRequest($"api/v1/policy", Method.Post).AddJsonBody(dto);
@@ -233,33 +231,4 @@ public class PostPolicyTests(HttpClientFixture httpClientFixture, DatabaseFixtur
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
-
-    private static CreatePolicyRequestDto BuildValidRequest() => new()
-    {
-        InsuranceType = InsuranceType.Household.ToString(),
-        StartDate = DateTimeOffset.UtcNow,
-        AutoRenew = true,
-        Policyholders =
-        [
-            new PolicyholderDto
-            {
-                FirstName = "FirstName",
-                LastName = "LastName",
-                DateOfBirth = DateTimeOffset.UtcNow.AddYears(-20),
-            }
-        ],
-        Property = new PropertyDto
-        {
-            AddressLine1 = "AddressLine1",
-            AddressLine2 = "AddressLine2",
-            AddressLine3 = "AddressLine3",
-            Postcode = "Postcode"
-        },
-        Payment = new PaymentDto
-        {
-            Reference = "Reference",
-            PaymentType = PaymentType.Card.ToString(),
-            Amount = 199.99m
-        }
-    };
 }
