@@ -1,7 +1,6 @@
 ﻿using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
-using Uinsure.TechnicalTest.API.Configuration;
 using Uinsure.TechnicalTest.Application.Configuration;
 
 namespace Uinsure.TechnicalTest.API.Extensions;
