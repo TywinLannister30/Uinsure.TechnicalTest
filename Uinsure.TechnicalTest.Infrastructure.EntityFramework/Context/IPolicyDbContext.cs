@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Uinsure.TechnicalTest.Domain.Agregates;
+using Uinsure.TechnicalTest.Domain.Aggregates;
 using Uinsure.TechnicalTest.Domain.Entities;
 
 namespace Uinsure.TechnicalTest.Infrastructure.EntityFramework.Context;

@@ -1,5 +1,5 @@
 ﻿using Uinsure.TechnicalTest.Application.Dtos;
-using Uinsure.TechnicalTest.Domain.Agregates;
+using Uinsure.TechnicalTest.Domain.Aggregates;
 
 namespace Uinsure.TechnicalTest.Application.Mappers;
 

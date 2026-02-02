@@ -1,0 +1,22 @@
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithThreadId",
+      "WithProcessId",
+      "WithExceptionDetails"
+    ],
+    "Properties": {
+      "Application": "Uinsure Technical Test",
+      "Environment": "Local"
+    }
+  }
+}

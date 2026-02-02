@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.Routing;
+using Serilog;
 using Uinsure.TechnicalTest.API.Extensions;
 using Uinsure.TechnicalTest.Application.Configuration;
 
@@ -8,7 +9,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "Configuration"));
 builder.Configuration.AddJsonFile("ConnectionStrings.json");
 builder.Configuration.AddJsonFile("ApplicationSettings.json");
+builder.Configuration.AddJsonFile("LogSettings.json");
+builder.Configuration.AddJsonFile($"LogSettings.{builder.Environment.EnvironmentName}.json");
 builder.Configuration.AddEnvironmentVariables();
+
+builder.Host.UseSerilog((context, services, loggerConfig) =>
+{
+    loggerConfig
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
 
 var connectionString = builder.Configuration.GetConnectionString("PolicyContext");
 
@@ -38,6 +49,7 @@ builder.Services.Configure<RouteOptions>(options =>
     options.ConstraintMap["apiVersion"] = typeof(ApiVersionRouteConstraint);
 });
 
+builder.Services.AddOtlp("uinsure", builder.Configuration);
 
 var app = builder.Build();
 

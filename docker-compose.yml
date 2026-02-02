@@ -33,6 +33,14 @@ services:
         for f in /db/dbo/tables/Policies.sql /db/dbo/tables/Policyholders.sql /db/dbo/tables/Properties.sql /db/dbo/tables/Payments.sql; do
           /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -d UinsureTechnicalTest -i "$$f"
         done
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.5
+    ports:
+     - "18888:18888"
+     - "4317:4317"
+    environment:
+     - DOTNET_DASHBOARD_OTLP_ENDPOINT_URL=http://+:4317
+     - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
   api:
     build:
@@ -45,6 +53,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__PolicyContext: "Data Source=db,1433;Initial Catalog=UinsureTechnicalTest;MultipleActiveResultSets=True;User id=sa;Password=${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd};TrustServerCertificate=True"
+      Otlp__Host: aspire-dashboard
+      Serilog__WriteTo__0__Args__Endpoint: "http://aspire-dashboard:4317"
     ports:
       - "5019:8080"
 

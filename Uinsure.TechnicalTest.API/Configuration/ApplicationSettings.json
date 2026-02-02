@@ -1,4 +1,8 @@
 {
+  "Otlp": {
+    "Host": "localhost",
+    "Port": 4317
+  },
   "PolicySettings": {
     "CoolingOffPeriodDays": 14,
     "MaxStartDateAdvanceDays": 60,

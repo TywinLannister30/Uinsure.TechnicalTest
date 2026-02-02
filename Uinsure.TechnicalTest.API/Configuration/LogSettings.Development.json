@@ -1,0 +1,17 @@
+{
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.OpenTelemetry" ],
+    "WriteTo": [
+      {
+        "Name": "OpenTelemetry",
+        "Args": {
+          "Endpoint": "http://localhost:4317",
+          "Protocol": "Grpc",
+          "ResourceAttributes": {
+            "service.name": "uninsure"
+          }
+        }
+      }
+    ]
+  }
+}

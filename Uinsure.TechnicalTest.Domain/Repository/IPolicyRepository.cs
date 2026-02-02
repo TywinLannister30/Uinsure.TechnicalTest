@@ -1,4 +1,4 @@
-using Uinsure.TechnicalTest.Domain.Agregates;
+using Uinsure.TechnicalTest.Domain.Aggregates;
 
 namespace Uinsure.TechnicalTest.Domain.Repository;
 

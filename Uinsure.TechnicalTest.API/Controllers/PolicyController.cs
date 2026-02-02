@@ -4,11 +4,11 @@ using System.Net;
 using Uinsure.TechnicalTest.Application.Dtos;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Request;
 using Uinsure.TechnicalTest.Application.Dtos.Api.Response;
-using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
-using Uinsure.TechnicalTest.Application.Services.PolicyClaimService;
-using Uinsure.TechnicalTest.Application.Services.PolicyCreationService;
-using Uinsure.TechnicalTest.Application.Services.PolicyRenewalService;
-using Uinsure.TechnicalTest.Application.Services.PolicyRetrievalService;
+using Uinsure.TechnicalTest.Application.Services.PolicyCancellation;
+using Uinsure.TechnicalTest.Application.Services.PolicyClaim;
+using Uinsure.TechnicalTest.Application.Services.PolicyCreation;
+using Uinsure.TechnicalTest.Application.Services.PolicyRenewal;
+using Uinsure.TechnicalTest.Application.Services.PolicyRetrieval;
 
 namespace Uinsure.TechnicalTest.API.Controllers;
 

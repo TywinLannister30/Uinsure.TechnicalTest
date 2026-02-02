@@ -1,10 +1,10 @@
-﻿using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService;
-using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService.Factories;
-using Uinsure.TechnicalTest.Application.Services.PolicyCancellationService.RefundProcessors;
-using Uinsure.TechnicalTest.Application.Services.PolicyClaimService;
-using Uinsure.TechnicalTest.Application.Services.PolicyCreationService;
-using Uinsure.TechnicalTest.Application.Services.PolicyRenewalService;
-using Uinsure.TechnicalTest.Application.Services.PolicyRetrievalService;
+﻿using Uinsure.TechnicalTest.Application.Services.PolicyCancellation;
+using Uinsure.TechnicalTest.Application.Services.PolicyCancellation.Factories;
+using Uinsure.TechnicalTest.Application.Services.PolicyCancellation.RefundProcessors;
+using Uinsure.TechnicalTest.Application.Services.PolicyClaim;
+using Uinsure.TechnicalTest.Application.Services.PolicyCreation;
+using Uinsure.TechnicalTest.Application.Services.PolicyRenewal;
+using Uinsure.TechnicalTest.Application.Services.PolicyRetrieval;
 
 namespace Uinsure.TechnicalTest.API.Extensions;
 
