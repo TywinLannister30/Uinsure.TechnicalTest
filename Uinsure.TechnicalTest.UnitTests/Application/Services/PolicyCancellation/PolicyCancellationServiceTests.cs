@@ -4,25 +4,25 @@ using Uinsure.TechnicalTest.Application.Services.PolicyCancellation;
 using Uinsure.TechnicalTest.Application.Services.PolicyCancellation.Factories;
 using Uinsure.TechnicalTest.Application.Services.PolicyCancellation.RefundProcessors;
 using Uinsure.TechnicalTest.Domain.Aggregates;
-using Uinsure.TechnicalTest.Domain.Entities;
 using Uinsure.TechnicalTest.Domain.Enums;
 using Uinsure.TechnicalTest.Domain.Repository;
+using Uinsure.TechnicalTest.UnitTests.Helpers;
 
 namespace Uinsure.TechnicalTest.UnitTests.Application.Services.PolicyCancellation;
 
 public class PolicyCancellationServiceTests
 {
-    private readonly Mock<IPolicyRepository> _policyRepo = new();
-    private readonly Mock<IRefundProcessorFactory> _refundFactory = new();
+    private readonly Mock<IPolicyRepository> _mockPolicyRepository = new();
+    private readonly Mock<IRefundProcessorFactory> _mockRefundProcessorFactory = new();
 
-    private PolicyCancellationService CreateSut() => new(_policyRepo.Object, _refundFactory.Object);
+    private PolicyCancellationService CreateSut() => new(_mockPolicyRepository.Object, _mockRefundProcessorFactory.Object);
 
     [Fact]
     public async Task CancelPolicyAsync_WhenPolicyNotFound_ReturnsNull()
     {
         var policyId = Guid.NewGuid();
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policyId)).ReturnsAsync((Policy?)null);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policyId)).ReturnsAsync((Policy?)null);
 
         var sut = CreateSut();
 
@@ -32,16 +32,16 @@ public class PolicyCancellationServiceTests
 
         Assert.Null(result);
 
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
-        _refundFactory.VerifyNoOtherCalls();
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
+        _mockRefundProcessorFactory.VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task CancelPolicyAsync_WhenAlreadyCancelled_ReturnsAlreadyCancelledTrue_DoesNotSave()
     {
-        var policy = CreatePolicy(isCancelled: true, hasClaims: false);
+        var policy = PolicyHelpers.CreatePolicy(isCancelled: true);
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
 
         var sut = CreateSut();
 
@@ -53,8 +53,8 @@ public class PolicyCancellationServiceTests
         Assert.True(result!.AlreadyCancelled);
         Assert.Null(result.Policy);
 
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
-        _refundFactory.VerifyNoOtherCalls();
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
+        _mockRefundProcessorFactory.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -62,9 +62,9 @@ public class PolicyCancellationServiceTests
     {
         var cancellationDate = new DateTimeOffset(2030, 1, 10, 0, 0, 0, TimeSpan.Zero);
 
-        var policy = CreatePolicy(isCancelled: false, hasClaims: true);
+        var policy = PolicyHelpers.CreatePolicy(hasClaims: true);
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
 
         var sut = CreateSut();
 
@@ -78,16 +78,16 @@ public class PolicyCancellationServiceTests
         Assert.Equal(0, result.RefundAmount);
         Assert.NotNull(result.Policy);
 
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
-        _refundFactory.VerifyNoOtherCalls();
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
+        _mockRefundProcessorFactory.VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task CancelPolicyAsync_WhenHasClaims_ActionRefundFalse_ReturnsRefundZero_DoesNotSave()
     {
-        var policy = CreatePolicy(isCancelled: false, hasClaims: true);
+        var policy = PolicyHelpers.CreatePolicy(hasClaims: true);
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
 
         var sut = CreateSut();
 
@@ -100,8 +100,8 @@ public class PolicyCancellationServiceTests
         Assert.Equal(0, result!.RefundAmount);
         Assert.Null(result.Policy);
         
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
-        _refundFactory.VerifyNoOtherCalls();
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
+        _mockRefundProcessorFactory.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -110,22 +110,21 @@ public class PolicyCancellationServiceTests
         var start = new DateTimeOffset(2029, 1, 1, 0, 0, 0, TimeSpan.Zero);
         var cancel = new DateTimeOffset(2029, 1, 10, 0, 0, 0, TimeSpan.Zero);
 
-        var policy = CreatePolicy(isCancelled: false, hasClaims: false, startDate: start);
+        var policy = PolicyHelpers.CreatePolicy(startDate: start);
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
 
-        _refundFactory.Setup(f => f.GetRefundProcessor(start, cancel)).Returns((IRefundProcessor?)null);
+        _mockRefundProcessorFactory.Setup(f => f.GetRefundProcessor(start, cancel)).Returns((IRefundProcessor?)null);
 
         var sut = CreateSut();
 
-        // Act + Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             sut.CancelPolicyAsync(policy.Id, new CancelPolicyRequestDto { CancellationDate = cancel }, actionRefund: true)
         );
 
         Assert.Contains("No refund processor found", ex.Message);
 
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
 
     [Fact]
@@ -134,16 +133,15 @@ public class PolicyCancellationServiceTests
         var start = new DateTimeOffset(2029, 1, 1, 0, 0, 0, TimeSpan.Zero);
         var cancel = new DateTimeOffset(2029, 1, 11, 0, 0, 0, TimeSpan.Zero);
 
-        var policy = CreatePolicy(isCancelled: false, hasClaims: false, startDate: start);
-
-        var refundPayment = CreatePayment(12.34m, TransactionType.Refund, policy.Id);
+        var policy = PolicyHelpers.CreatePolicy(startDate: start);
+        var refundPayment = PolicyHelpers.CreatePayment(12.34m, TransactionType.Refund, policy.Id);
 
         var processor = new Mock<IRefundProcessor>();
         processor.Setup(p => p.Process(policy, cancel)).Returns(refundPayment);
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
 
-        _refundFactory.Setup(f => f.GetRefundProcessor(start, cancel)).Returns(processor.Object);
+        _mockRefundProcessorFactory.Setup(f => f.GetRefundProcessor(start, cancel)).Returns(processor.Object);
 
         var sut = CreateSut();
 
@@ -157,7 +155,7 @@ public class PolicyCancellationServiceTests
         Assert.Equal(12.34m, result.RefundAmount);
 
         processor.Verify(p => p.Process(policy, cancel), Times.Once);
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
@@ -166,16 +164,15 @@ public class PolicyCancellationServiceTests
         var start = new DateTimeOffset(2029, 1, 1, 0, 0, 0, TimeSpan.Zero);
         var cancel = new DateTimeOffset(2029, 1, 11, 0, 0, 0, TimeSpan.Zero);
 
-        var policy = CreatePolicy(isCancelled: false, hasClaims: false, startDate: start);
-
-        var refundPayment = CreatePayment(-50m, TransactionType.Refund, policy.Id);
+        var policy = PolicyHelpers.CreatePolicy(startDate: start);
+        var refundPayment = PolicyHelpers.CreatePayment(-50m, TransactionType.Refund, policy.Id);
 
         var processor = new Mock<IRefundProcessor>();
         processor.Setup(p => p.Process(policy, cancel)).Returns(refundPayment);
 
-        _policyRepo.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
+        _mockPolicyRepository.Setup(r => r.GetByIdAsync(policy.Id)).ReturnsAsync(policy);
 
-        _refundFactory.Setup(f => f.GetRefundProcessor(start, cancel)).Returns(processor.Object);
+        _mockRefundProcessorFactory.Setup(f => f.GetRefundProcessor(start, cancel)).Returns(processor.Object);
 
         var sut = CreateSut();
 
@@ -189,42 +186,6 @@ public class PolicyCancellationServiceTests
         Assert.Null(result.Policy);
 
         processor.Verify(p => p.Process(policy, cancel), Times.Once);
-        _policyRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
-    }
-
-    private static Policy CreatePolicy(bool isCancelled, bool hasClaims, decimal amount = 100, DateTimeOffset? startDate = null)
-    {
-        var policy = new Policy(
-            startDate ?? new DateTimeOffset(2029, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            InsuranceType.Household,
-            autoRenew: true
-        );
-
-        policy.AddPayment(new Payment(
-            "reference",
-            PaymentType.Card,
-            amount,
-            TransactionType.Payment,
-            policy.Id
-            ));
-
-        if (hasClaims)
-            policy.MarkAsClaim();
-
-        if (isCancelled)
-            policy.Cancel(new DateTimeOffset(2029, 6, 1, 0, 0, 0, TimeSpan.Zero));
-
-        return policy;
-    }
-
-    private static Payment CreatePayment(decimal amount, TransactionType transactionType, Guid policyId)
-    {
-        return new Payment(
-            "reference",
-            PaymentType.Card,
-            amount,
-            transactionType,
-            policyId
-        );
+        _mockPolicyRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
 }

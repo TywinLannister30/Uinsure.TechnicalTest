@@ -120,7 +120,7 @@ public class PolicyController(
     [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity, Type = typeof(IActionResult))]
     public async Task<IActionResult> MarkAsClaim(Guid policyId)
     {
-        var result = await _policyClaimService.MarkAsClaim(policyId);
+        var result = await _policyClaimService.MarkAsClaimAsync(policyId);
 
         if (result is null)
             return NotFound($"Policy with id {policyId} does not exist.");

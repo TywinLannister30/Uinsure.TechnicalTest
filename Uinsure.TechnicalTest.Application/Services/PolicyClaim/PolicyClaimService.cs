@@ -8,7 +8,7 @@ public class PolicyClaimService(IPolicyRepository policyRepository) : IPolicyCla
 {
     private readonly IPolicyRepository _policyRepository = policyRepository;
 
-    public async Task<PolicyDto?> MarkAsClaim(Guid policyId)
+    public async Task<PolicyDto?> MarkAsClaimAsync(Guid policyId)
     {
         var policy = await _policyRepository.GetByIdAsync(policyId);
 

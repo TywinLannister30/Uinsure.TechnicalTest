@@ -4,5 +4,5 @@ namespace Uinsure.TechnicalTest.Application.Services.PolicyClaim;
 
 public interface IPolicyClaimService
 {
-    Task<PolicyDto?> MarkAsClaim(Guid policyId);
+    Task<PolicyDto?> MarkAsClaimAsync(Guid policyId);
 }
